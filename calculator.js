@@ -2,7 +2,7 @@
 // take two numbers and either add, substract, multiply, or divide
 
 function add(intFirstNumber, intSecondNumber) {
-    return intFirstNumber + intSecondNumber;
+    return intFirstNumber + intSecondNumber
 }
 
 function substract(intFirstNumber, intSecondNumber) {

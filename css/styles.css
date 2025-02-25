@@ -1,0 +1,27 @@
+.calculator_container {
+    border: 5px solid black;
+    display: flex;
+    flex-direction: column;
+    width: 600px;
+    font-size: 4rem;
+}
+
+.calculator_screen {
+    border: 1px solid black;
+}
+
+.calculator_button {
+    border: 1px solid black;
+    width: 150px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.calculator_column {
+    display: flex;
+    flex-direction: column;
+}
+
+.calculator_row {
+    display: flex;
+}
