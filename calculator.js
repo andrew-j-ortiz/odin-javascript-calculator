@@ -16,3 +16,21 @@ function multiply(intFirstNumber, intSecondNumber) {
 function divide(intFirstNumber, intSecondNumber) {
     return intFirstNumber / intSecondNumber
 }
+
+// operate function
+// takes three inputs, two numbers and an operator, depending on the operator it will either return an addition, substraction, multiplication, or division
+
+function operate(intFirstNumber, intSecondNumber, operator) {
+    switch (operator) {
+        case "+":
+            return add(intFirstNumber, intSecondNumber)
+        case "-":
+            return substract(intFirstNumber, intSecondNumber)
+        case "*":
+            return multiply(intFirstNumber, intSecondNumber)
+        case "/":
+            return divide(intFirstNumber, intSecondNumber)
+        default:
+            return "Error: incorrect inputs!"
+    }
+}
