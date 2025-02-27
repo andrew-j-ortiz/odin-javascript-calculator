@@ -34,3 +34,47 @@ function operate(intFirstNumber, intSecondNumber, operator) {
             return "Error: incorrect inputs!"
     }
 }
+
+// DOM elements
+const domCalculator = document.getElementById("calculator");
+const domCalculatorScreen = document.getElementById("calculatorScreen");
+
+// Event listeners
+domCalculator.addEventListener("click", (event)=>{
+    handleCalculatorLogic(event);
+})
+
+// Handle calculator logic and update UI
+let firstNumberArray = [];
+let secondNumberArray = [];
+let operator = "";
+
+let intFirstNumber = 0;
+let intSecondNumber = 0;
+
+function handleCalculatorLogic(event) {
+    // Get first number
+    if (!Number.isNaN(Number(event.target.textContent)) && operator === "") {
+        firstNumberArray.push(Number(event.target.textContent)) 
+        intFirstNumber = firstNumberArray.join("");
+        domCalculatorScreen.innerHTML = intFirstNumber;
+    } 
+    
+    // Get operator
+    if (Number.isNaN(Number(event.target.textContent)) &&
+        event.target.textContent !== "C" &&
+        event.target.textContent !== "=") {
+
+        operator = event.target.textContent;
+        domCalculatorScreen.innerHTML = operator;
+    }
+
+    // Get second number
+    if (!Number.isNaN(Number(event.target.textContent)) && operator !== "") {
+
+        secondNumberArray.push(Number(event.target.textContent));
+        intSecondNumber = secondNumberArray.join("");
+        domCalculatorScreen.innerHTML = intSecondNumber;
+    }
+
+}
