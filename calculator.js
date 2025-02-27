@@ -45,10 +45,11 @@ domCalculator.addEventListener("click", (event)=>{
 })
 
 // Handle calculator logic and update UI
+
+// Variables
 let firstNumberArray = [];
 let secondNumberArray = [];
 let operator = "";
-
 let intFirstNumber = 0;
 let intSecondNumber = 0;
 
@@ -56,7 +57,7 @@ function handleCalculatorLogic(event) {
     // Get first number
     if (!Number.isNaN(Number(event.target.textContent)) && operator === "") {
         firstNumberArray.push(Number(event.target.textContent)) 
-        intFirstNumber = firstNumberArray.join("");
+        intFirstNumber = Number(firstNumberArray.join(""));
         domCalculatorScreen.innerHTML = intFirstNumber;
     } 
     
@@ -64,17 +65,30 @@ function handleCalculatorLogic(event) {
     if (Number.isNaN(Number(event.target.textContent)) &&
         event.target.textContent !== "C" &&
         event.target.textContent !== "=") {
-
-        operator = event.target.textContent;
-        domCalculatorScreen.innerHTML = operator;
+            operator = event.target.textContent;
+            domCalculatorScreen.innerHTML = operator;
     }
 
     // Get second number
     if (!Number.isNaN(Number(event.target.textContent)) && operator !== "") {
-
         secondNumberArray.push(Number(event.target.textContent));
-        intSecondNumber = secondNumberArray.join("");
+        intSecondNumber = Number(secondNumberArray.join(""));
         domCalculatorScreen.innerHTML = intSecondNumber;
     }
 
+    if (event.target.textContent === "=" &&
+        firstNumberArray.length !== 0 && 
+        secondNumberArray.length !== 0) {
+            const intAnswer = operate(intFirstNumber, intSecondNumber, operator);
+            domCalculatorScreen.innerHTML = intAnswer;
+    }
+
+    if (event.target.textContent === "C") {
+        firstNumberArray = [];
+        secondNumberArray = [];
+        operator = "";
+        intFirstNumber = 0;
+        intSecondNumber = 0;
+        domCalculatorScreen.innerHTML = intFirstNumber;
+    }
 }
