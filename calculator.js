@@ -1,6 +1,4 @@
-// operator functions
-// take two numbers and either add, substract, multiply, or divide
-
+// Operators 
 function add(intFirstNumber, intSecondNumber) {
     return intFirstNumber + intSecondNumber
 }
@@ -17,9 +15,7 @@ function divide(intFirstNumber, intSecondNumber) {
     return intFirstNumber / intSecondNumber
 }
 
-// operate function
-// takes three inputs, two numbers and an operator, depending on the operator it will either return an addition, substraction, multiplication, or division
-
+// Operate
 function operate(intFirstNumber, intSecondNumber, operator) {
     switch (operator) {
         case "+":
@@ -41,24 +37,19 @@ const domCalculatorScreen = document.getElementById("calculatorScreen");
 const domCalculatorButtons = document.getElementById("calculatorButtonsColumn");
 
 // Event listeners
-/*domCalculator.addEventListener("click", (event)=>{
-    handleCalculatorLogic(event);
-})*/
-
 domCalculatorButtons.addEventListener("click", (event)=>{
     handleCalculatorLogic(event);
 })
 
-// Handle calculator logic and update UI
-
-// Variables
+// Global variables
 let firstNumberArray = [];
 let secondNumberArray = [];
 let intCurrentNumber = 1;
 let strOperator = "";
 let operation = []
-let decimalInputed = false;
+let boolDecimalInputed = false;
 
+// Handle calculator logic 
 function handleCalculatorLogic(e) {
     const event = whatIsEvent(e.target.textContent);
 
@@ -67,7 +58,7 @@ function handleCalculatorLogic(e) {
             placeDigit(intCurrentNumber, Number(e.target.textContent));
             break;
         case "decimal":
-            placeDecimal(intCurrentNumber);
+            placeDecimal();
             break;
         case "operator":
             setOperator(e.target.textContent);
@@ -78,13 +69,9 @@ function handleCalculatorLogic(e) {
     }
 
     // Change to second number
-    if (
-        firstNumberArray.length > 0 && 
-        secondNumberArray.length === 0 &&
-        strOperator !== ""
-    ) {
+    if (firstNumberArray.length > 0 && secondNumberArray.length === 0 && strOperator !== "") {
         intCurrentNumber = 2;
-        decimalInputed = false;
+        boolDecimalInputed = false;
     }
 
     operation = [firstNumberArray.join(""), strOperator, secondNumberArray.join("")];
@@ -116,14 +103,28 @@ function placeDigit(intCurrentNumber, intEventNumber) {
 }
 
 // Place decmial on current number
-function placeDecimal(intCurrentNumber) {
-    if (!decimalInputed){
+function placeDecimal() {
+    if (intCurrentNumber === 1){
+        firstNumberArray.forEach(item =>{
+            if (item === ".") {
+                boolDecimalInputed = true;
+            }
+        })
+    } else if (intCurrentNumber === 2) {
+        secondNumberArray.forEach(item =>{
+            if (item === "."){
+                boolDecimalInputed = true;
+            }
+        })
+    }
+
+    if (!boolDecimalInputed){
         if (intCurrentNumber === 1){
             firstNumberArray.push(".");
-            decimalInputed = true;
+            boolDecimalInputed = true;
         } else if (intCurrentNumber === 2){
             secondNumberArray.push(".");
-            decimalInputed = true;
+            boolDecimalInputed = true;
         }
     }
 }
@@ -138,8 +139,8 @@ function calculateOperation(operation) {
     const intFirstNumber = Number(operation[0]);
     const intSecondNumber = Number(operation[2]);
     const intAnswer = operate(intFirstNumber, intSecondNumber, strOperator);
-    console.log(intAnswer);
     strOperator = "";
+    intCurrentNumber = 1;
     firstNumberArray = String(intAnswer).split("");
     secondNumberArray = [];
 }
