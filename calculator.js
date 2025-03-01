@@ -26,9 +26,9 @@ function operate(intFirstNumber, intSecondNumber, operator) {
             return add(intFirstNumber, intSecondNumber)
         case "-":
             return substract(intFirstNumber, intSecondNumber)
-        case "*":
+        case "x":
             return multiply(intFirstNumber, intSecondNumber)
-        case "/":
+        case "÷":
             return divide(intFirstNumber, intSecondNumber)
         default:
             return "Error: incorrect inputs!"
@@ -49,40 +49,75 @@ domCalculator.addEventListener("click", (event)=>{
 // Variables
 let firstNumberArray = [];
 let secondNumberArray = [];
-let operator = "";
 let intFirstNumber = 0;
 let intSecondNumber = 0;
 
+let operator = "";
+let firstNumberInputed = false;
+
 function handleCalculatorLogic(event) {
+    const intEventNumber = Number(event.target.textContent);
+    const eventIsNotNumber = Number.isNaN(intEventNumber);
+
     // Get first number
-    if (!Number.isNaN(Number(event.target.textContent)) && operator === "") {
-        firstNumberArray.push(Number(event.target.textContent)) 
+    if (!eventIsNotNumber && !firstNumberInputed) {
+        firstNumberArray.push(intEventNumber) 
         intFirstNumber = Number(firstNumberArray.join(""));
         domCalculatorScreen.innerHTML = intFirstNumber;
     } 
     
     // Get operator
-    if (Number.isNaN(Number(event.target.textContent)) &&
-        event.target.textContent !== "C" &&
-        event.target.textContent !== "=") {
-            operator = event.target.textContent;
-            domCalculatorScreen.innerHTML = operator;
+    if (eventIsNotNumber && event.target.textContent !== "C" &&
+        event.target.textContent !== "=" && operator === "" &&
+        secondNumberArray.length === 0
+    ) {
+        firstNumberInputed = true;
+        operator = event.target.textContent;
+        domCalculatorScreen.innerHTML += operator;
     }
 
     // Get second number
-    if (!Number.isNaN(Number(event.target.textContent)) && operator !== "") {
-        secondNumberArray.push(Number(event.target.textContent));
+    if (!eventIsNotNumber && firstNumberInputed) {
+        secondNumberArray.push(intEventNumber);
         intSecondNumber = Number(secondNumberArray.join(""));
-        domCalculatorScreen.innerHTML = intSecondNumber;
+        domCalculatorScreen.innerHTML += intEventNumber;
+    } 
+
+    // Get operation result
+    if (
+        intFirstNumber === 0 && operator === "÷" && event.target.textContent === "=" || 
+        intSecondNumber === 0 && operator === "÷" && event.target.textContent == "="
+    ){
+        domCalculatorScreen.innerHTML = "Are you trying to kill us all?"
+        firstNumberArray = [];
+        secondNumberArray = [];
+        operator = "";
+        intEventNumber = 0;
+        intSecondNumber = 0;
+        firstNumberInputed = false;
+    } else if (
+        firstNumberInputed && secondNumberArray.length > 0 && event.target.textContent === "="
+    ) {
+        const intAnswer = operate(intFirstNumber, intSecondNumber, operator);
+        domCalculatorScreen.innerHTML = intAnswer;
+        operator = "";
+        secondNumberArray = [];
+        intFirstNumber = intAnswer;
+    } else if (
+        firstNumberInputed && secondNumberArray.length > 0 && event.target.textContent === "+" ||
+        firstNumberInputed && secondNumberArray.length > 0 && event.target.textContent === "-" ||
+        firstNumberInputed && secondNumberArray.length > 0 && event.target.textContent === "x" ||
+        firstNumberInputed && secondNumberArray.length > 0 && event.target.textContent === "÷"
+    ){
+        const intAnswer = operate(intFirstNumber, intSecondNumber, operator);
+        domCalculatorScreen.innerHTML = intAnswer;
+        operator = event.target.textContent;
+        secondNumberArray = [];
+        intFirstNumber = intAnswer;
+        domCalculatorScreen.innerHTML += event.target.textContent
     }
 
-    if (event.target.textContent === "=" &&
-        firstNumberArray.length !== 0 && 
-        secondNumberArray.length !== 0) {
-            const intAnswer = operate(intFirstNumber, intSecondNumber, operator);
-            domCalculatorScreen.innerHTML = intAnswer;
-    }
-
+    // Clear
     if (event.target.textContent === "C") {
         firstNumberArray = [];
         secondNumberArray = [];
@@ -90,5 +125,6 @@ function handleCalculatorLogic(event) {
         intFirstNumber = 0;
         intSecondNumber = 0;
         domCalculatorScreen.innerHTML = intFirstNumber;
+        firstNumberInputed = false;
     }
 }
