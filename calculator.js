@@ -35,11 +35,14 @@ function operate(intFirstNumber, intSecondNumber, operator) {
 const domCalculator = document.getElementById("calculator");
 const domCalculatorScreen = document.getElementById("calculatorScreen");
 const domCalculatorButtons = document.getElementById("calculatorButtonsColumn");
+const domClearButton = document.getElementById("buttonClear");
 
 // Event listeners
 domCalculatorButtons.addEventListener("click", (event)=>{
     handleCalculatorLogic(event);
 })
+
+domClearButton.addEventListener("click", ()=>{clearCalculator()});
 
 // Global variables
 let firstNumberArray = [];
@@ -145,6 +148,17 @@ function calculateOperation(operation) {
     secondNumberArray = [];
 }
 
+// Clear
+function clearCalculator() {
+    firstNumberArray = [];
+    secondNumberArray = [];
+    intCurrentNumber = 1;
+    strOperator = "";
+    operation = [];
+    boolDecimalInputed = false;
+    domCalculatorScreen.innerHTML = 0;
+}
+
 /*function handleCalculatorLogic(event) {
     const intEventNumber = Number(event.target.textContent);
     const eventIsNotNumber = Number.isNaN(intEventNumber);
@@ -235,7 +249,7 @@ function calculateOperation(operation) {
         clearCalculator();
         domCalculatorScreen.innerHTML = intFirstNumber;
    }
-}*/
+}
 
 function clearCalculator() {
     firstNumberArray = [];
@@ -245,4 +259,4 @@ function clearCalculator() {
     intSecondNumber = 0;
     firstNumberInputed = false;
     decimalInputed = false;
-}
+}*/
