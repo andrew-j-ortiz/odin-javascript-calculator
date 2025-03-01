@@ -38,9 +38,14 @@ function operate(intFirstNumber, intSecondNumber, operator) {
 // DOM elements
 const domCalculator = document.getElementById("calculator");
 const domCalculatorScreen = document.getElementById("calculatorScreen");
+const domCalculatorButtons = document.getElementById("calculatorButtonsColumn");
 
 // Event listeners
-domCalculator.addEventListener("click", (event)=>{
+/*domCalculator.addEventListener("click", (event)=>{
+    handleCalculatorLogic(event);
+})*/
+
+domCalculatorButtons.addEventListener("click", (event)=>{
     handleCalculatorLogic(event);
 })
 
@@ -49,25 +54,114 @@ domCalculator.addEventListener("click", (event)=>{
 // Variables
 let firstNumberArray = [];
 let secondNumberArray = [];
-let intFirstNumber = 0;
-let intSecondNumber = 0;
-
-let operator = "";
-let firstNumberInputed = false;
+let intCurrentNumber = 1;
+let strOperator = "";
+let operation = []
 let decimalInputed = false;
 
-function handleCalculatorLogic(event) {
+function handleCalculatorLogic(e) {
+    const event = whatIsEvent(e.target.textContent);
+
+    switch (event) {
+        case "number":
+            placeDigit(intCurrentNumber, Number(e.target.textContent));
+            break;
+        case "decimal":
+            placeDecimal(intCurrentNumber);
+            break;
+        case "operator":
+            setOperator(e.target.textContent);
+            break;
+        case "equals":
+            calculateOperation(operation);
+            break;
+    }
+
+    // Change to second number
+    if (
+        firstNumberArray.length > 0 && 
+        secondNumberArray.length === 0 &&
+        strOperator !== ""
+    ) {
+        intCurrentNumber = 2;
+        decimalInputed = false;
+    }
+
+    operation = [firstNumberArray.join(""), strOperator, secondNumberArray.join("")];
+    domCalculatorScreen.innerHTML = operation.join("");
+}
+
+// Check what the event is
+function whatIsEvent(event) {
+    if (!Number.isNaN(Number(event))) {
+        return "number";
+    } else if (event === "+" || event === "-" || event === "x" || event === "÷") {
+        return "operator";
+    } else if (event === ".") {
+        return "decimal";
+    } else if (event === "=") {
+        return "equals";
+    } else {
+        return "unkown";
+    }
+}
+
+// Place digit on current number
+function placeDigit(intCurrentNumber, intEventNumber) {
+    if (intCurrentNumber === 1) {
+        firstNumberArray.push(intEventNumber);
+    } else if (intCurrentNumber === 2) {
+        secondNumberArray.push(intEventNumber);
+    }
+}
+
+// Place decmial on current number
+function placeDecimal(intCurrentNumber) {
+    if (!decimalInputed){
+        if (intCurrentNumber === 1){
+            firstNumberArray.push(".");
+            decimalInputed = true;
+        } else if (intCurrentNumber === 2){
+            secondNumberArray.push(".");
+            decimalInputed = true;
+        }
+    }
+}
+
+// Set operator
+function setOperator(operator) {
+    strOperator = operator;
+}
+
+// Calculate operation
+function calculateOperation(operation) {
+    const intFirstNumber = Number(operation[0]);
+    const intSecondNumber = Number(operation[2]);
+    const intAnswer = operate(intFirstNumber, intSecondNumber, strOperator);
+    console.log(intAnswer);
+    strOperator = "";
+    firstNumberArray = String(intAnswer).split("");
+    secondNumberArray = [];
+}
+
+/*function handleCalculatorLogic(event) {
     const intEventNumber = Number(event.target.textContent);
     const eventIsNotNumber = Number.isNaN(intEventNumber);
 
     // Get first number
     if (!eventIsNotNumber && !firstNumberInputed &&
-        domCalculatorScreen.innerHTML === "0"
+        domCalculatorScreen.innerHTML === "0" &&
+        event.target.id !== "calculatorScreen" ||
+        !eventIsNotNumber && !firstNumberInputed &&
+        domCalculatorScreen.innerHTML === "Are you trying to kill us all?" &&
+        event.target.id !== "calculatorScreen"
     ) {
         firstNumberArray.push(intEventNumber) 
         intFirstNumber = Number(firstNumberArray.join(""));
         domCalculatorScreen.innerHTML = intFirstNumber;
-    } else if (!eventIsNotNumber && !firstNumberInputed
+    } else if (
+        !eventIsNotNumber && !firstNumberInputed &&
+        event.target.id !== "calculatorScreen"
     ) {
         firstNumberArray.push(intEventNumber) 
         intFirstNumber = Number(firstNumberArray.join(""));
@@ -110,14 +204,9 @@ function handleCalculatorLogic(event) {
     if (
         intFirstNumber === 0 && operator === "÷" && event.target.textContent === "=" || 
         intSecondNumber === 0 && operator === "÷" && event.target.textContent == "="
-    ){
+    ) {
         domCalculatorScreen.innerHTML = "Are you trying to kill us all?"
-        firstNumberArray = [];
-        secondNumberArray = [];
-        operator = "";
-        intEventNumber = 0;
-        intSecondNumber = 0;
-        firstNumberInputed = false;
+        clearCalculator();
     } else if (
         firstNumberInputed && secondNumberArray.length > 0 && event.target.textContent === "="
     ) {
@@ -131,7 +220,7 @@ function handleCalculatorLogic(event) {
         firstNumberInputed && secondNumberArray.length > 0 && event.target.textContent === "-" ||
         firstNumberInputed && secondNumberArray.length > 0 && event.target.textContent === "x" ||
         firstNumberInputed && secondNumberArray.length > 0 && event.target.textContent === "÷"
-    ){
+    ) {
         const intAnswer = operate(intFirstNumber, intSecondNumber, operator);
         domCalculatorScreen.innerHTML = intAnswer;
         operator = event.target.textContent;
@@ -142,12 +231,17 @@ function handleCalculatorLogic(event) {
 
     // Clear
     if (event.target.textContent === "C") {
-        firstNumberArray = [];
-        secondNumberArray = [];
-        operator = "";
-        intFirstNumber = 0;
-        intSecondNumber = 0;
+        clearCalculator();
         domCalculatorScreen.innerHTML = intFirstNumber;
-        firstNumberInputed = false;
-    }
+   }
+}*/
+
+function clearCalculator() {
+    firstNumberArray = [];
+    secondNumberArray = [];
+    operator = "";
+    intFirstNumber = 0;
+    intSecondNumber = 0;
+    firstNumberInputed = false;
+    decimalInputed = false;
 }
