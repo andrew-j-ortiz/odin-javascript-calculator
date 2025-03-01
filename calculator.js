@@ -54,26 +54,43 @@ let intSecondNumber = 0;
 
 let operator = "";
 let firstNumberInputed = false;
+let decimalInputed = false;
 
 function handleCalculatorLogic(event) {
     const intEventNumber = Number(event.target.textContent);
     const eventIsNotNumber = Number.isNaN(intEventNumber);
 
     // Get first number
-    if (!eventIsNotNumber && !firstNumberInputed) {
+    if (!eventIsNotNumber && !firstNumberInputed &&
+        domCalculatorScreen.innerHTML === "0"
+    ) {
         firstNumberArray.push(intEventNumber) 
         intFirstNumber = Number(firstNumberArray.join(""));
         domCalculatorScreen.innerHTML = intFirstNumber;
-    } 
+    } else if (!eventIsNotNumber && !firstNumberInputed
+    ) {
+        firstNumberArray.push(intEventNumber) 
+        intFirstNumber = Number(firstNumberArray.join(""));
+        domCalculatorScreen.innerHTML += intEventNumber;
+    } else if (event.target.textContent === "." && !firstNumberInputed && !decimalInputed
+    ) {
+        firstNumberArray.push(".");
+        domCalculatorScreen.innerHTML += event.target.textContent;
+        decimalInputed = true;
+    }
     
     // Get operator
-    if (eventIsNotNumber && event.target.textContent !== "C" &&
-        event.target.textContent !== "=" && operator === "" &&
+    if (eventIsNotNumber && 
+        event.target.textContent !== "C" &&
+        event.target.textContent !== "." && 
+        event.target.textContent !== "=" &&
+        operator === "" && 
         secondNumberArray.length === 0
     ) {
         firstNumberInputed = true;
         operator = event.target.textContent;
         domCalculatorScreen.innerHTML += operator;
+        decimalInputed = false;
     }
 
     // Get second number
@@ -81,6 +98,12 @@ function handleCalculatorLogic(event) {
         secondNumberArray.push(intEventNumber);
         intSecondNumber = Number(secondNumberArray.join(""));
         domCalculatorScreen.innerHTML += intEventNumber;
+    } else if (
+        event.target.textContent === "." && firstNumberInputed && !decimalInputed
+    ) {
+        secondNumberArray.push(".");
+        domCalculatorScreen.innerHTML += event.target.textContent;
+        decimalInputed = true;
     } 
 
     // Get operation result

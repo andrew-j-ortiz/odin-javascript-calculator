@@ -8,6 +8,10 @@
 
 .calculator_screen {
     border: 1px solid black;
+    display: flex;
+    height: 150px;
+    flex-grow: 1;
+    overflow-wrap: break-word;
 }
 
 .calculator_button {
@@ -15,6 +19,13 @@
     width: 150px;
     text-align: center;
     cursor: pointer;
+}
+
+#buttonClear {
+    width: 148px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .calculator_column {
