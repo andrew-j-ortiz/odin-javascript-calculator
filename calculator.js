@@ -47,7 +47,6 @@ let secondNumberArray = [];
 let intCurrentNumber = 1;
 let strOperator = "";
 let operation = []
-let boolDecimalInputed = false;
 
 // Handle calculator logic 
 function handleCalculatorLogic(e) {
@@ -103,6 +102,7 @@ function placeDigit(intCurrentNumber, intEventNumber) {
 }
 
 // Place decmial on current number
+let boolDecimalInputed = false;
 function placeDecimal() {
     if (intCurrentNumber === 1){
         firstNumberArray.forEach(item =>{
@@ -143,14 +143,16 @@ function setOperator(operator) {
 
 // Calculate operation
 function calculateOperation(operation) {
-    const intFirstNumber = Number(operation[0]);
-    const intSecondNumber = Number(operation[2]);
-    const intAnswer = operate(intFirstNumber, intSecondNumber, strOperator);
-    strOperator = "";
-    boolOperatorSet = false;
-    intCurrentNumber = 1;
-    firstNumberArray = String(intAnswer).split("");
-    secondNumberArray = [];
+    if (operation[0].length > 0 && operation[2].length > 0) {
+        const intFirstNumber = Number(operation[0]);
+        const intSecondNumber = Number(operation[2]);
+        const intAnswer = operate(intFirstNumber, intSecondNumber, strOperator);
+        strOperator = "";
+        boolOperatorSet = false;
+        intCurrentNumber = 1;
+        firstNumberArray = String(intAnswer).split("");
+        secondNumberArray = [];
+    }
 }
 
 // Clear
