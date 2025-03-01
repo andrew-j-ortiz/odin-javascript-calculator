@@ -38,10 +38,7 @@ const domCalculatorButtons = document.getElementById("calculatorButtonsColumn");
 const domClearButton = document.getElementById("buttonClear");
 
 // Event listeners
-domCalculatorButtons.addEventListener("click", (event)=>{
-    handleCalculatorLogic(event);
-})
-
+domCalculatorButtons.addEventListener("click", (event)=>{handleCalculatorLogic(event)});
 domClearButton.addEventListener("click", ()=>{clearCalculator()});
 
 // Global variables
@@ -133,8 +130,15 @@ function placeDecimal() {
 }
 
 // Set operator
+let boolOperatorSet = false;
 function setOperator(operator) {
-    strOperator = operator;
+    if (operation[1] !== "" && secondNumberArray.length > 0) {
+        boolOperatorSet = true;
+    }
+
+    if (!boolOperatorSet) {
+        strOperator = operator;
+    }    
 }
 
 // Calculate operation
@@ -143,6 +147,7 @@ function calculateOperation(operation) {
     const intSecondNumber = Number(operation[2]);
     const intAnswer = operate(intFirstNumber, intSecondNumber, strOperator);
     strOperator = "";
+    boolOperatorSet = false;
     intCurrentNumber = 1;
     firstNumberArray = String(intAnswer).split("");
     secondNumberArray = [];
@@ -156,6 +161,7 @@ function clearCalculator() {
     strOperator = "";
     operation = [];
     boolDecimalInputed = false;
+    boolOperatorSet = false;
     domCalculatorScreen.innerHTML = 0;
 }
 
