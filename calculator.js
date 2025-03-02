@@ -47,11 +47,13 @@ let secondNumberArray = [];
 let intCurrentNumber = 1;
 let strOperator = "";
 let operation = []
+let boolOperationEnded = false;
 
 // Handle calculator logic 
 function handleCalculatorLogic(e) {
     const event = whatIsEvent(e.target.textContent);
 
+    // Handle event
     switch (event) {
         case "number":
             placeDigit(intCurrentNumber, Number(e.target.textContent));
@@ -76,12 +78,25 @@ function handleCalculatorLogic(e) {
     // Calculate operation if user clicks on an operator
     // Set operator to clicked operator 
     if (
-        firstNumberArray.length > 0 && secondNumberArray.length > 0 && boolOperatorSet && 
-        event === "operator"
+        firstNumberArray.length > 0 && secondNumberArray.length > 0 && 
+        boolOperatorSet && event === "operator"
     ) {
         calculateOperation(operation);
         intCurrentNumber = 2;
         strOperator = e.target.textContent;
+    }
+
+    // Clear calculator if operation ended and user clicks on a number
+    if (boolOperationEnded && event === "number" && strOperator === ""){
+        clearCalculator();
+        placeDigit(intCurrentNumber, Number(e.target.textContent));
+        boolOperationEnded = false;
+    }
+
+    // Clear calculator if user attempted to divide by zero and clicks on a number
+    if (boolDivideByZero && event === "number") {
+        clearCalculator();
+        placeDigit(intCurrentNumber, Number(e.target.textContent));
     }
 
     operation = [firstNumberArray.join(""), strOperator, secondNumberArray.join("")];
@@ -129,13 +144,15 @@ function placeDecimal() {
         })
     }
 
-    if (!boolDecimalInputed){
+    if (!boolDecimalInputed && !boolDivideByZero){
         if (intCurrentNumber === 1){
             firstNumberArray.push(".");
             boolDecimalInputed = true;
+            boolOperationEnded = false
         } else if (intCurrentNumber === 2){
             secondNumberArray.push(".");
             boolDecimalInputed = true;
+            boolOperationEnded = false;
         }
     }
 }
@@ -149,12 +166,31 @@ function setOperator(operator) {
 
     if (!boolOperatorSet) {
         strOperator = operator;
-    }    
+    } 
+}
+
+// Give a funny message if user attempts to divide by zero
+// Not the most elegant solution... but it works...
+let boolDivideByZero = false;
+function dividedByZero() {
+    if (boolDivideByZero){
+        firstNumberArray = [];
+        secondNumberArray = [];
+        strOperator = "";
+        firstNumberArray.push("Are you trying to kill us all?");
+    }
 }
 
 // Calculate operation
+// Make sure user is not attempting to divide by zero
 function calculateOperation(operation) {
-    if (operation[0].length > 0 && operation[2].length > 0) {
+    if (
+        operation[0] === "0" && operation[1] === "÷" ||
+        operation[2] === "0" && operation[1] === "÷"
+    ) {
+        boolDivideByZero = true;
+        dividedByZero();
+    } else if (operation[0].length > 0 && operation[2].length > 0 && !boolDivideByZero) {
         const intFirstNumber = Number(operation[0]);
         const intSecondNumber = Number(operation[2]);
         const intAnswer = operate(intFirstNumber, intSecondNumber, strOperator);
@@ -163,6 +199,7 @@ function calculateOperation(operation) {
         intCurrentNumber = 1;
         firstNumberArray = String(intAnswer).split("");
         secondNumberArray = [];
+        boolOperationEnded = true;
     }
 }
 
@@ -175,107 +212,7 @@ function clearCalculator() {
     operation = [];
     boolDecimalInputed = false;
     boolOperatorSet = false;
+    boolOperationEnded = false;
+    boolDivideByZero = false;
     domCalculatorScreen.innerHTML = 0;
 }
-
-/*function handleCalculatorLogic(event) {
-    const intEventNumber = Number(event.target.textContent);
-    const eventIsNotNumber = Number.isNaN(intEventNumber);
-
-    // Get first number
-    if (!eventIsNotNumber && !firstNumberInputed &&
-        domCalculatorScreen.innerHTML === "0" &&
-        event.target.id !== "calculatorScreen" ||
-        !eventIsNotNumber && !firstNumberInputed &&
-        domCalculatorScreen.innerHTML === "Are you trying to kill us all?" &&
-        event.target.id !== "calculatorScreen"
-    ) {
-        firstNumberArray.push(intEventNumber) 
-        intFirstNumber = Number(firstNumberArray.join(""));
-        domCalculatorScreen.innerHTML = intFirstNumber;
-    } else if (
-        !eventIsNotNumber && !firstNumberInputed &&
-        event.target.id !== "calculatorScreen"
-    ) {
-        firstNumberArray.push(intEventNumber) 
-        intFirstNumber = Number(firstNumberArray.join(""));
-        domCalculatorScreen.innerHTML += intEventNumber;
-    } else if (event.target.textContent === "." && !firstNumberInputed && !decimalInputed
-    ) {
-        firstNumberArray.push(".");
-        domCalculatorScreen.innerHTML += event.target.textContent;
-        decimalInputed = true;
-    }
-    
-    // Get operator
-    if (eventIsNotNumber && 
-        event.target.textContent !== "C" &&
-        event.target.textContent !== "." && 
-        event.target.textContent !== "=" &&
-        operator === "" && 
-        secondNumberArray.length === 0
-    ) {
-        firstNumberInputed = true;
-        operator = event.target.textContent;
-        domCalculatorScreen.innerHTML += operator;
-        decimalInputed = false;
-    }
-
-    // Get second number
-    if (!eventIsNotNumber && firstNumberInputed) {
-        secondNumberArray.push(intEventNumber);
-        intSecondNumber = Number(secondNumberArray.join(""));
-        domCalculatorScreen.innerHTML += intEventNumber;
-    } else if (
-        event.target.textContent === "." && firstNumberInputed && !decimalInputed
-    ) {
-        secondNumberArray.push(".");
-        domCalculatorScreen.innerHTML += event.target.textContent;
-        decimalInputed = true;
-    } 
-
-    // Get operation result
-    if (
-        intFirstNumber === 0 && operator === "÷" && event.target.textContent === "=" || 
-        intSecondNumber === 0 && operator === "÷" && event.target.textContent == "="
-    ) {
-        domCalculatorScreen.innerHTML = "Are you trying to kill us all?"
-        clearCalculator();
-    } else if (
-        firstNumberInputed && secondNumberArray.length > 0 && event.target.textContent === "="
-    ) {
-        const intAnswer = operate(intFirstNumber, intSecondNumber, operator);
-        domCalculatorScreen.innerHTML = intAnswer;
-        operator = "";
-        secondNumberArray = [];
-        intFirstNumber = intAnswer;
-    } else if (
-        firstNumberInputed && secondNumberArray.length > 0 && event.target.textContent === "+" ||
-        firstNumberInputed && secondNumberArray.length > 0 && event.target.textContent === "-" ||
-        firstNumberInputed && secondNumberArray.length > 0 && event.target.textContent === "x" ||
-        firstNumberInputed && secondNumberArray.length > 0 && event.target.textContent === "÷"
-    ) {
-        const intAnswer = operate(intFirstNumber, intSecondNumber, operator);
-        domCalculatorScreen.innerHTML = intAnswer;
-        operator = event.target.textContent;
-        secondNumberArray = [];
-        intFirstNumber = intAnswer;
-        domCalculatorScreen.innerHTML += event.target.textContent
-    }
-
-    // Clear
-    if (event.target.textContent === "C") {
-        clearCalculator();
-        domCalculatorScreen.innerHTML = intFirstNumber;
-   }
-}
-
-function clearCalculator() {
-    firstNumberArray = [];
-    secondNumberArray = [];
-    operator = "";
-    intFirstNumber = 0;
-    intSecondNumber = 0;
-    firstNumberInputed = false;
-    decimalInputed = false;
-}*/
