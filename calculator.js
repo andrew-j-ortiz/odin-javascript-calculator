@@ -73,6 +73,17 @@ function handleCalculatorLogic(e) {
         boolDecimalInputed = false;
     }
 
+    // Calculate operation if user clicks on an operator
+    // Set operator to clicked operator 
+    if (
+        firstNumberArray.length > 0 && secondNumberArray.length > 0 && boolOperatorSet && 
+        event === "operator"
+    ) {
+        calculateOperation(operation);
+        intCurrentNumber = 2;
+        strOperator = e.target.textContent;
+    }
+
     operation = [firstNumberArray.join(""), strOperator, secondNumberArray.join("")];
     domCalculatorScreen.innerHTML = operation.join("");
 }
