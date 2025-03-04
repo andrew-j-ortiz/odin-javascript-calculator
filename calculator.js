@@ -42,7 +42,7 @@ domCalculatorButtons.addEventListener("click", (event)=>{handleCalculatorLogic(e
 domClearButton.addEventListener("click", ()=>{clearCalculator()});
 
 // Global variables
-let firstNumberArray = [];
+let firstNumberArray = [0];
 let secondNumberArray = [];
 let intCurrentNumber = 1;
 let strOperator = "";
@@ -99,9 +99,14 @@ function handleCalculatorLogic(e) {
         placeDigit(intCurrentNumber, Number(e.target.textContent));
     }
 
+    updateScreenAndOperation();
+}
+
+function updateScreenAndOperation() {
     operation = [firstNumberArray.join(""), strOperator, secondNumberArray.join("")];
     domCalculatorScreen.innerHTML = operation.join("");
 }
+updateScreenAndOperation();
 
 // Check what the event is
 function whatIsEvent(event) {
@@ -121,6 +126,10 @@ function whatIsEvent(event) {
 // Place digit on current number
 function placeDigit(intCurrentNumber, intEventNumber) {
     if (intCurrentNumber === 1) {
+        if (firstNumberArray[0] === 0 && firstNumberArray[1] !== ".") {
+            firstNumberArray.pop();
+            updateScreenAndOperation();
+        }
         firstNumberArray.push(intEventNumber);
     } else if (intCurrentNumber === 2) {
         secondNumberArray.push(intEventNumber);
@@ -164,7 +173,7 @@ function setOperator(operator) {
         boolOperatorSet = true;
     }
 
-    if (!boolOperatorSet) {
+    if (!boolOperatorSet && firstNumberArray.length > 0 && !boolDivideByZero) {
         strOperator = operator;
     } 
 }
@@ -193,7 +202,7 @@ function calculateOperation(operation) {
     } else if (operation[0].length > 0 && operation[2].length > 0 && !boolDivideByZero) {
         const intFirstNumber = Number(operation[0]);
         const intSecondNumber = Number(operation[2]);
-        const intAnswer = operate(intFirstNumber, intSecondNumber, strOperator);
+        let intAnswer = operate(intFirstNumber, intSecondNumber, strOperator);
         strOperator = "";
         boolOperatorSet = false;
         intCurrentNumber = 1;
@@ -205,7 +214,7 @@ function calculateOperation(operation) {
 
 // Clear
 function clearCalculator() {
-    firstNumberArray = [];
+    firstNumberArray = [0];
     secondNumberArray = [];
     intCurrentNumber = 1;
     strOperator = "";
@@ -214,5 +223,5 @@ function clearCalculator() {
     boolOperatorSet = false;
     boolOperationEnded = false;
     boolDivideByZero = false;
-    domCalculatorScreen.innerHTML = 0;
+    updateScreenAndOperation();
 }
